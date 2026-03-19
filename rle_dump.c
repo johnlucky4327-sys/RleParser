@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <ctype.h>
 #include <time.h>
 
 #ifdef _WIN32
@@ -294,6 +295,10 @@ static int process_file(const char *rle_path, const char *out_dir) {
 static int total_files = 0;
 static int total_images = 0;
 
+static void str_to_lower(char *s) {
+    for (; *s; s++) *s = (char)tolower((unsigned char)*s);
+}
+
 static int str_ends_with_ci(const char *s, const char *suffix) {
     size_t slen = strlen(s), suflen = strlen(suffix);
     if (slen < suflen) return 0;
@@ -331,6 +336,7 @@ static void walk_dir(const char *src_dir, const char *dump_root,
             char fname_stem[4096];
             memcpy(fname_stem, fd.cFileName, fnlen + 1);
             if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
+            str_to_lower(fname_stem);
 
             char prefix[4] = {0};
             strncpy(prefix, fname_stem, 3);
@@ -368,6 +374,7 @@ static void walk_dir(const char *src_dir, const char *dump_root,
             size_t fnlen = strlen(ent->d_name), elen = strlen(ext);
             memcpy(fname_stem, ent->d_name, fnlen + 1);
             if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
+            str_to_lower(fname_stem);
 
             char prefix[4] = {0};
             strncpy(prefix, fname_stem, 3);
