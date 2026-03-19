@@ -43,7 +43,7 @@ Windows 编译 (Visual Studio Community)
   4. 验证编译器: 输入 where cl, 如果显示路径说明安装正确,
      如果提示找不到则需要检查是否勾选了 C++ 工作负荷
   5. 在命令行中 cd 到 rle_dump.c 所在目录:
-       cd D:\RleParser
+       cd /d D:\RleParser
        cl /O2 rle_dump.c
        rle_dump.exe data\images .rle
 

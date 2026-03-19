@@ -50,7 +50,7 @@ gcc -O2 -o rle_dump rle_dump.c
 5. 在命令行中 cd 到 `rle_dump.c` 所在目录:
 
 ```cmd
-cd D:\RleParser
+cd /d D:\RleParser
 cl /O2 rle_dump.c
 rle_dump.exe data\images .rle
 ```
