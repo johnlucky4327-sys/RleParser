@@ -45,7 +45,7 @@ gcc -O2 -o rle_dump rle_dump.c
 **方式一：IDE 编译**
 
 1. 下载最新版 `Dev-Cpp.*.Setup.exe` 并安装
-2. 打��� Dev-C++，菜单 文件 → 打开，选择 `rle_dump.c`
+2. 打开 Dev-C++，菜单 文件 → 打开，选择 `rle_dump.c`
 3. 菜单 运行 → 编译（或按 F9），生成 `rle_dump.exe`
 4. 打开命令提示符（cmd），cd 到 `rle_dump.exe` 所在目录：
 
