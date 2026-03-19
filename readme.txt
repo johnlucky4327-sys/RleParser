@@ -9,7 +9,7 @@ RLE Dumper
 
 Python 版
 ---------
-无第三方依赖，需要 Python 3.6+
+无第三方依赖，需要 Python 3.6+ (https://www.python.org/)
 
   python rle_dump.py <文件夹> [--ext 后缀名]
   python rle_dump.py data\images --ext .rle
@@ -20,11 +20,21 @@ C 版
 
 编译环境:
   macOS / Linux: 系统自带 gcc 或通过包管理器安装 (brew install gcc / apt install gcc)
-  Windows: 安装 Visual Studio Community (免费)，安装时勾选"使用 C++ 的桌面开发"
+  Windows: 安装 Dev-C++ (https://github.com/royqh1979/Dev-CPP/releases)
+    1. 下载最新版 Dev-Cpp.*.Setup.exe 并安装
+    2. 打开 Dev-C++，菜单 文件 → 打开，选择 rle_dump.c
+    3. 菜单 运行 → 编译 (或按 F9)，生成 rle_dump.exe
+    4. 打开命令提示符 (cmd)，cd 到 rle_dump.exe 所在目录，执行:
+       rle_dump.exe data\images .rle
+
+  也可以直接用命令行编译 (Dev-C++ 自带 gcc):
+    1. 将 Dev-C++ 安装目录下的 MinGW64\bin 添加到系统 PATH 环境变量
+    2. 打开命令提示符:
+       gcc -O2 -o rle_dump.exe rle_dump.c
+       rle_dump.exe data\images .rle
 
 编译:
   gcc -O2 -o rle_dump rle_dump.c                    (macOS / Linux)
-  cl /O2 rle_dump.c                                 (Windows，在 Developer Command Prompt for VS 中执行)
 
 运行:
   ./rle_dump <文件夹> [后缀名]                         (macOS / Linux)
