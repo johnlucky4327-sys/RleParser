@@ -37,9 +37,12 @@ Windows 编译 (Visual Studio Community)
 下载地址: https://visualstudio.microsoft.com/zh-hans/vs/community/
 
   1. 下载并运行安装程序
-  2. 在工作负荷页面勾选"使用 C++ 的桌面开发", 点击安装
-  3. 安装完成后, 打开开始菜单, 找到 Developer Command Prompt for VS 2022 (或对应版本)
-  4. 在命令行中 cd 到 rle_dump.c 所在目录:
+  2. 在工作负荷页面勾选"使用 C++ 的桌面开发", 点击安装。如果已安装但未勾选,
+     打开 Visual Studio Installer, 点击"修改", 勾选后点击"修改"按钮
+  3. 安装完成后, 打开开始菜单, 搜索 "Developer Command Prompt", 选择 Developer Command Prompt for VS 2026
+  4. 验证编译器: 输入 where cl, 如果显示路径说明安装正确,
+     如果提示找不到则需要检查是否勾选了 C++ 工作负荷
+  5. 在命令行中 cd 到 rle_dump.c 所在目录:
        cd D:\RleParser
        cl /O2 rle_dump.c
        rle_dump.exe data\images .rle
