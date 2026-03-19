@@ -53,6 +53,8 @@ def parse_rle_file(data):
     # Read offset table
     offsets = []
     for i in range(count):
+        if off + 4 > len(data):
+            raise ValueError(f"offset table truncated at entry {i}/{count}, file size {len(data)}")
         pos, off = read_u4(data, off)
         offsets.append(pos)
 
@@ -236,12 +238,16 @@ def write_bmp(path, width, height, rgba_pixels):
         f.write(out)
 
 
-def process_file(rle_path, out_dir):
+def process_file(rle_path, out_dir, rel_path):
     """Parse one .rle file, skip all-transparent files, batch write."""
     with open(rle_path, "rb") as f:
         data = f.read()
 
-    surfaces = parse_rle_file(data)
+    try:
+        surfaces = parse_rle_file(data)
+    except ValueError as e:
+        print(f"  ERROR: {rel_path}: {e}")
+        return 0
     if not surfaces:
         return 0
 
@@ -262,6 +268,7 @@ def process_file(rle_path, out_dir):
     for idx, w, h, pixels in visible:
         write_bmp(os.path.join(out_dir, f"{idx:05d}.bmp"), w, h, pixels)
 
+    print(f"  {rel_path} -> {len(visible)} images")
     return len(visible)
 
 
@@ -289,17 +296,17 @@ def main():
         for fname in sorted(files):
             if not fname.lower().endswith(ext):
                 continue
+            if fname.startswith("."):
+                continue
 
             rel_path = os.path.relpath(os.path.join(root, fname), src_dir)
             stem = os.path.splitext(rel_path)[0]
             out_dir = os.path.join(dump_dir, stem)
             rle_path = os.path.join(root, fname)
 
-            n = process_file(rle_path, out_dir)
+            n = process_file(rle_path, out_dir, rel_path)
             total_files += 1
             total_images += n
-            if n > 0:
-                print(f"  {rel_path} → {n} images")
 
     elapsed = time.time() - t0
     print(f"\nDone: {total_files} files, {total_images} images → {dump_dir} ({elapsed:.1f}s)")

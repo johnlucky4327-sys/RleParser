@@ -251,8 +251,14 @@ static int process_file(const char *rle_path, const char *out_dir) {
     /* read offset table */
     uint32_t *offsets = (uint32_t *)malloc(count * sizeof(uint32_t));
     if (!offsets) { free(data); return 0; }
-    for (uint32_t i = 0; i < count; i++)
+    for (uint32_t i = 0; i < count; i++) {
+        if (off + 4 > (int)data_len) {
+            fprintf(stderr, "  ERROR: offset table truncated at entry %u/%u, file size %zu\n",
+                    (unsigned)i, (unsigned)count, data_len);
+            free(offsets); free(data); return 0;
+        }
         offsets[i] = rd_u4(data, &off);
+    }
 
     /* decode all surfaces */
     Surface *surfs = (Surface *)calloc(count, sizeof(Surface));
