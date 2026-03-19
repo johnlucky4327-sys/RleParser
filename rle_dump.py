@@ -300,8 +300,9 @@ def main():
                 continue
 
             rel_path = os.path.relpath(os.path.join(root, fname), src_dir)
-            stem = os.path.splitext(rel_path)[0]
-            out_dir = os.path.join(dump_dir, stem)
+            file_stem = fname[:len(fname) - len(ext)]  # strip full ext, e.g. "bul00000"
+            prefix = file_stem[:3]                      # e.g. "bul"
+            out_dir = os.path.join(dump_dir, prefix, file_stem)
             rle_path = os.path.join(root, fname)
 
             n = process_file(rle_path, out_dir, rel_path)

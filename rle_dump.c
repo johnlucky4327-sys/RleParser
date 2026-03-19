@@ -306,7 +306,7 @@ static int str_ends_with_ci(const char *s, const char *suffix) {
     return 1;
 }
 
-static void walk_dir(const char *src_dir, const char *dump_dir,
+static void walk_dir(const char *src_dir, const char *dump_root,
                      const char *rel_prefix, const char *ext)
 {
 #ifdef _WIN32
@@ -325,36 +325,18 @@ static void walk_dir(const char *src_dir, const char *dump_dir,
             snprintf(rel, sizeof(rel), "%s", fd.cFileName);
 
         if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            char sub_dump[4096];
-            snprintf(sub_dump, sizeof(sub_dump), "%s\\%s", dump_dir, fd.cFileName);
-            walk_dir(full, sub_dump, rel, ext);
+            walk_dir(full, dump_root, rel, ext);
         } else if (str_ends_with_ci(fd.cFileName, ext)) {
-            /* strip extension for output dir */
-            char stem[4096];
-            snprintf(stem, sizeof(stem), "%s", rel);
-            size_t slen = strlen(stem), elen = strlen(ext);
-            if (slen > elen) stem[slen - elen] = '\0';
+            size_t fnlen = strlen(fd.cFileName), elen = strlen(ext);
+            char fname_stem[4096];
+            memcpy(fname_stem, fd.cFileName, fnlen + 1);
+            if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
+
+            char prefix[4] = {0};
+            strncpy(prefix, fname_stem, 3);
 
             char out_dir[4096];
-            snprintf(out_dir, sizeof(out_dir), "%s\\%s", dump_dir, stem);
-            /* but we need dump_dir based on top-level, recalc */
-            /* out_dir is already correct since dump_dir mirrors structure */
-
-            /* rebuild out_dir from dump root + stem */
-            size_t rplen = strlen(rel_prefix);
-            if (rplen > 0) {
-                char fname_stem[4096];
-                size_t fnlen = strlen(fd.cFileName);
-                memcpy(fname_stem, fd.cFileName, fnlen + 1);
-                if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
-                snprintf(out_dir, sizeof(out_dir), "%s\\%s", dump_dir, fname_stem);
-            } else {
-                size_t fnlen = strlen(fd.cFileName);
-                char fname_stem[4096];
-                memcpy(fname_stem, fd.cFileName, fnlen + 1);
-                if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
-                snprintf(out_dir, sizeof(out_dir), "%s\\%s", dump_dir, fname_stem);
-            }
+            snprintf(out_dir, sizeof(out_dir), "%s\\%s\\%s", dump_root, prefix, fname_stem);
 
             int n = process_file(full, out_dir);
             total_files++;
@@ -380,17 +362,18 @@ static void walk_dir(const char *src_dir, const char *dump_dir,
         if (stat(full, &st) != 0) continue;
 
         if (S_ISDIR(st.st_mode)) {
-            char sub_dump[4096];
-            snprintf(sub_dump, sizeof(sub_dump), "%s/%s", dump_dir, ent->d_name);
-            walk_dir(full, sub_dump, rel, ext);
+            walk_dir(full, dump_root, rel, ext);
         } else if (str_ends_with_ci(ent->d_name, ext)) {
             char fname_stem[4096];
             size_t fnlen = strlen(ent->d_name), elen = strlen(ext);
             memcpy(fname_stem, ent->d_name, fnlen + 1);
             if (fnlen > elen) fname_stem[fnlen - elen] = '\0';
 
+            char prefix[4] = {0};
+            strncpy(prefix, fname_stem, 3);
+
             char out_dir[4096];
-            snprintf(out_dir, sizeof(out_dir), "%s/%s", dump_dir, fname_stem);
+            snprintf(out_dir, sizeof(out_dir), "%s/%s/%s", dump_root, prefix, fname_stem);
 
             int n = process_file(full, out_dir);
             total_files++;
